@@ -153,8 +153,7 @@ var doorList=[];
 var sensorList=[];
 var sceneList=[];
 var imageIcons=new Image();
-var path="/local/";
-imageIcons.src=path + "images.png";
+imageIcons.src="/local/community/home-plan/images.png";
 
 class LamPlan extends LitElement  {
     constructor() {
