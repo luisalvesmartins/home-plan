@@ -1,0 +1,25 @@
+{
+    "name": "home-plan",
+    "version": "1.0.1",
+    "description": "Lovelace Home Plan card",
+    "keywords": [
+      "home-assistant",
+      "homeassistant",
+      "hass",
+      "automation",
+      "lovelace",
+      "custom-cards",
+      "home-plan"
+    ],
+    "module": "home-plan.js",
+    "repository": "git@github.com:home-plan/home-plan.git",
+    "author": "Luis Alves Martins",
+    "license": "MIT",
+    "dependencies": {
+    },
+    "devDependencies": {
+    },
+    "scripts": {
+    }
+  }
+  
