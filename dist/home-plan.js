@@ -146,6 +146,7 @@ var Limits={
 
 }
 
+var zoom=0;
 var pointList=[];
 var lineList=[];
 var roomList=[];
@@ -221,6 +222,12 @@ class LamPlan extends LitElement  {
         var outside = this.shadowRoot.getElementById("hp_outside");
         var context = canvas.getContext("2d");
         
+        if (zoom!=0 && this.AutoZoom)
+        {
+            Limits.scale=zoom;
+            console.log("Force Zoom:", zoom)
+        }
+        else
         if (this.AutoZoom){
             canvas.width  = "100px";
             canvas.height = "100px"; 
@@ -230,6 +237,7 @@ class LamPlan extends LitElement  {
             var sx=Math.max(sx,sy)*1.1;
             //console.log(outside.offsetWidth, outside.offsetHeight, sx)
             Limits.scale=1/sx;
+            console.log("Zoom autoscale:", Limits.scale)
         }
         canvas.width  = Limits.xmax;
         canvas.height = Limits.ymax; 
@@ -370,7 +378,7 @@ class LamPlan extends LitElement  {
 
 //OUTROS AQUI: Lux
                 }
-                console.log(sensorList[f].entityId +"|" + sensorList[f].state + "   >" + JSON.stringify(state))
+                //console.log(sensorList[f].entityId +"|" + sensorList[f].state + "   >" + JSON.stringify(state))
             }
             Draw.Sensor(context,sensorList[f].name, sensorList[f].type, w, 10,"#000000",sensorList[f].state);
         }
@@ -402,6 +410,10 @@ class LamPlan extends LitElement  {
   // render an error card.
   setConfig(config) {
     console.log("setConfig()")
+    if (config.zoom)
+    {
+        zoom=config.zoom;
+    }
     var home=JSON.parse(JSON.stringify(config.plan));
     pointList=home.pointlist;
     lineList=home.lineList;
