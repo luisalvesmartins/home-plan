@@ -165,7 +165,7 @@ class LamPlan extends LitElement  {
     
     set hass( hass ) {
         this._hass = hass;
-        console.log("HASS changed")
+        //console.log("HASS changed")
         if ( this._ready ) {
             this.Refresh()
         }
@@ -214,8 +214,7 @@ class LamPlan extends LitElement  {
     }
 
     Refresh(){
-        console.info("Refreshing")
-
+        //console.info("Refreshing")
         Limits.calc(pointList);
 
         var canvas = this.shadowRoot.getElementById("hp_canvas");
@@ -228,17 +227,17 @@ class LamPlan extends LitElement  {
             console.log("Force Zoom:", zoom)
         }
         else
-        if (this.AutoZoom){
-            canvas.width  = "100px";
-            canvas.height = "100px"; 
-            
-            var sx=(Limits.xmax-Limits.xmin)/(outside.offsetWidth);
-            var sy=(Limits.ymax-Limits.ymin)/(document.documentElement.clientHeight-100);
-            var sx=Math.max(sx,sy)*1.1;
-            //console.log(outside.offsetWidth, outside.offsetHeight, sx)
-            Limits.scale=1/sx;
-            console.log("Zoom autoscale:", Limits.scale)
-        }
+            if (this.AutoZoom){
+                canvas.width  = "100px";
+                canvas.height = "100px"; 
+                
+                var sx=(Limits.xmax-Limits.xmin)/(outside.offsetWidth);
+                var sy=(Limits.ymax-Limits.ymin)/(document.documentElement.clientHeight-100);
+                var sx=Math.max(sx,sy)*1.1;
+                //console.log(outside.offsetWidth, outside.offsetHeight, sx)
+                Limits.scale=1/sx;
+                console.log("Zoom autoscale:", Limits.scale)
+            }
         canvas.width  = Limits.xmax;
         canvas.height = Limits.ymax; 
         
@@ -414,6 +413,8 @@ class LamPlan extends LitElement  {
     {
         zoom=config.zoom;
     }
+    else
+        zoom=0;
     var home=JSON.parse(JSON.stringify(config.plan));
     pointList=home.pointlist;
     lineList=home.lineList;
