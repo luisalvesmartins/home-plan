@@ -1,0 +1,112 @@
+
+BODY {margin:0}
+
+.dropdown {
+    font:bold 12px verdana;
+    color:white;
+    /* Border */
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    display: flex;
+
+    /* Reset list styles */
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: darkblue;
+}
+
+.dropdown li {
+    /* Spacing */
+    padding: 8px;
+
+    /* Used to position the sub dropdown */
+    position: relative;
+}
+
+/* The sub dropdown */
+.dropdown ul {
+    /* Border */
+    border: 1px solid rgba(0, 0, 0, 0.3);
+
+    /* Hidden by default */
+    display: none;
+
+    /* Absolute position */
+    left: 0;
+    position: absolute;
+    top: 100%;
+
+    /* Reset styles */
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+    /* Width */
+    width: 200px;
+    background-color: blue;
+}
+
+/* The second level sub dropdown */
+.dropdown ul ul {
+    left: 100%;
+    position: absolute;
+    top: 0;
+}
+
+/* Change background color of list item when being hovered */
+.dropdown li:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    cursor:pointer
+}
+
+/* Show the direct sub dropdown when hovering the list item */
+.dropdown li:hover > ul {
+    display: block;
+}            
+
+
+.holy-grail {
+    min-height: 100vh;
+}
+
+/**
+* Let's do a column distribution
+* (mobile first)
+* flex value is 1 1 auto to make
+* body skrinkable and extensible
+*/
+.holy-grail,
+.holy-grail-body {
+display: flex;
+flex: 1 1 auto;
+flex-direction: column;
+}
+
+/**
+* Content body item is made
+* extensible too.
+*/
+.holy-grail-content {
+flex: 1 1 auto;
+}
+
+/**
+* Let's introduce bigger screen
+*/
+
+@media (min-width: 768px) {
+/**
+ * Body items are now side by side
+ */
+.holy-grail-body {
+    flex-direction: row;
+}
+
+/**
+ * Sidebars have a basic 260 width
+ * and are not really flexible anymore
+ */
+.hg-sidebar {
+    flex: 0 0 260px;
+}
+}

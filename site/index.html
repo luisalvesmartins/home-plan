@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="Render.js"></script>
+</head>
+<body>
+    <div class="holy-grail">
+        <header>
+            <ul class="dropdown" onclick="mnuOp()">
+                <li>
+                    <div>Load/Save</div>
+                    <ul>
+                        <li onclick="loadImage()">Load image</li>
+                        <li onclick="loadConf()">Load configuration</li>
+                        <li onclick="saveConf()" style="border-top:1px solid">Save configuration</li>
+                    </ul>
+                </li>
+                <li>
+                    <div>Point</div>
+                    <ul>
+                        <li data="AddPoint" message="Select point">Add</li>
+                        <li data="DelPoint" message="Select point to delete">Delete</li>
+                        <li data="RefPoint" message="Select point to mark as reference">Reference Point</li>
+                    </ul>
+                </li>
+                <li>
+                    <div>Wall</div>
+                    <ul>
+                        <li data="AddWall1">Add</li>
+                        <li data="DelWall">Delete</li>
+                        <li data="LvlWall">Assign Level</li>
+                        <li style="border-top:1px solid">
+                            <div id="selLvl">Level: 1</div>
+                            <ul>
+                                <li onclick="assignMnu('Level: ','selLvl','1')">1</li>
+                                <li onclick="assignMnu('Level: ','selLvl','2')">2</li>
+                                <li onclick="assignMnu('Level: ','selLvl','3')">3</li>
+                                <li onclick="assignMnu('Level: ','selLvl','3')">4</li>
+                                <li onclick="assignMnu('Level: ','selLvl','5')">5</li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </li>
+                <li>
+                    <div>Room</div>
+                    <ul>
+                        <li data="AddRoom">Select Walls</li>
+                        <li data="EndRoom">Finish</li>
+                    </ul>
+                </li>
+                <li>
+                    <div>Door</div>
+                    <ul>
+                        <li>
+                            <div id="selDoorType">Type: Window</div>
+                            <ul>
+                                <li onclick="assignMnu('Type: ','selDoorType','Interior')">Interior</li>
+                                <li onclick="assignMnu('Type: ','selDoorType','Exterior')">Exterior</li>
+                                <li onclick="assignMnu('Type: ','selDoorType','Arc')">Arc</li>
+                                <li onclick="assignMnu('Type: ','selDoorType','Window')">Window</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <div id="selBlinder">Blinder: Yes</div>
+                            <ul>
+                                <li onclick="assignMnu('Blinder: ','selBlinder','Yes')">With Blinder</li>
+                                <li onclick="assignMnu('Blinder: ','selBlinder','No')">No Blinder</li>
+                            </ul>
+                        </li>
+                        <li data="AddDoor">AddDoor</li>
+                        <li><input id="txtDoorSize" type=text value=150></li>
+                    </ul>
+                </li>
+                <li>
+                    <div>Sensor</div>
+                    <ul>
+                        <li data="AddSLight">Light</li>
+                        <li data="AddSMotion">Motion</li>
+                        <li data="AddSLux">Lux</li>
+                        <li data="AddSFlood">Flood</li>
+                        <li data="AddSDoor">Door Contact</li>
+                    </ul>
+                </li>
+                <li>
+                    <div>Scene</div>
+                    <ul>
+                        <li>
+                            <div id="txtIconScene">Icon: 0</div>
+                            <ul>
+                                <li onclick="assignMnu('Icon: ','txtIconScene','0')">0</li>
+                                <li onclick="assignMnu('Icon: ','txtIconScene','1')">1</li>
+                            </ul>
+                        </li>
+                        <li data="AddScene">Add Scene</li>
+                    </ul>
+                </li>
+            </ul>
+        </header>
+        <main class="holy-grail-body">
+            <article class="holy-grail-content">
+                <div id="canvasContainer" style="overflow: auto;">
+                    <canvas id="canvas" width="100px" height="100px"></canvas>
+                </div>
+            </article>
+        </main>
+        <footer>
+            <div id="message" style="font:12px verdana"></div>
+        </footer>
+    </div>  
+    <div id="points" style="font-size:8pt;display: none;"></div>
+<script>
+    const copyToClipboard = str => {
+    const el = document.createElement('textarea');
+    el.value = str;
+    el.setAttribute('readonly', '');
+    el.style.position = 'absolute';
+    el.style.left = '-9999px';
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    };
+    function loadConf(){
+        var res=prompt("Paste the configuration here");
+        home=JSON.parse(res);
+        loadHome(home);
+        Refresh("canvas");
+    }
+    function saveConf(){
+        copyToClipboard(points.innerHTML);
+        alert("Configuration copied to the clipboard")
+    }
+    function loadImage(){
+        var im=prompt("Image path (including file)","garage.png")
+        imagem=im;
+        image.src=im;
+    }
+    function assignMnu(title,mnu,val){
+        var mnuEntry=document.getElementById(mnu);
+        mnuEntry.innerText=title + val;
+    }
+    function mnuOp(){
+        var e=this.event.srcElement;
+        var op=e.getAttribute("data");
+        if (op!=null)
+            setMode(op);
+        if (op=="EndRoom")
+            image_mup(null);
+        var m=e.getAttribute("message");
+        message(m);
+    }
+    function message(m){
+        var divM=document.getElementById("message");
+        if (m)
+            divM.innerHTML=m;
+        else
+            divM.innerHTML="";
+    }
+function setMenu(op){
+    document.getElementById("mnuPoint").style.display="none"
+    document.getElementById("mnuWall").style.display="none"
+    document.getElementById("mnuRoom").style.display="none"
+    document.getElementById("mnuDoor").style.display="none"
+    document.getElementById("mnuSensor").style.display="none"
+    document.getElementById("mnuScene").style.display="none"
+    if (op!="")
+    {
+        document.getElementById("mnu" + op).style.display="flex"
+    }
+    }
+
+    var home={};
+
+    var Colors={
+        Room:"#cccccc",
+        RoomText: "#000000",
+        RoomPresence: "#885555",
+        Door: "#338833",
+        DoorWithBlinder: "#338833",
+        DoorText: "#226622",
+        DoorOpen:"#ff3333",
+        DoorWithBlinderOpen: "#ff0000",
+        Levels:[
+        "#000055",
+        "#444400",
+        "#880088",
+        "#222222",
+        "#666666"
+        ]
+    }    
+
+    var pointList, lineList, roomList, doorList, sensorList, sceneList,imagem;
+
+    function loadHome(home){
+        if (home.image){
+            imagem=home.image;
+            image.src=imagem;
+        }
+        pointList=home.pointlist;
+        if (!pointList)
+            pointList=[];
+        lineList=home.lineList;
+        if (!lineList)
+            lineList=[];
+        roomList=home.roomList;
+        if (!roomList)
+            roomList=[];
+        doorList=home.doorList;
+        if (!doorList)
+            doorList=[];
+        sensorList=home.sensorList;
+        if (!sensorList)
+            sensorList=[];
+        sceneList=home.sceneList;
+        if (!sceneList)
+           sceneList=[];
+
+    }
+
+    var gridSize=10;
+    var mode="";
+    var pSel=null;
+
+    var tmpRoom=[];
+
+    function setMode(m){
+        mode=m;
+        if (m==""){
+            Refresh("canvas");
+        }
+    }
+    function getCoordsFromEvent(ev){
+        if (ev){
+            var x=ev.clientX+document.scrollingElement.scrollLeft-canvas.offsetLeft;
+            var y=ev.clientY+document.scrollingElement.scrollTop-canvas.offsetTop;
+            x=Math.floor(x/gridSize+.5)*gridSize;
+            y=Math.floor(y/gridSize+.5)*gridSize;
+            return {x:x,y:y}
+        }
+        else
+            return null;
+    }
+    function getClosestPoint(p){
+        var dmin=999999999;
+        var pS=null;
+        for(var f=0;f<pointList.length;f++)
+        {
+            var d=(p.x-pointList[f].x)*(p.x-pointList[f].x)+(p.y-pointList[f].y)*(p.y-pointList[f].y);
+            if (d<dmin){
+                pS=f;
+                dmin=d;
+            }
+        }
+        return pS;
+    }
+    function getClosestLine(p){
+        var dmin=999999999;
+        var pS=null;
+        for(var f=0;f<lineList.length;f++)
+        {
+            var x0=pointList[lineList[f].from].x;
+            var y0=pointList[lineList[f].from].y;
+            var x1=pointList[lineList[f].to].x;
+            var y1=pointList[lineList[f].to].y;
+            var x=(x0+x1)/2;
+            var y=(y0+y1)/2;
+
+            var d=(p.x-x)*(p.x-x)+(p.y-y)*(p.y-y);
+            if (d<dmin){
+                pS=f;
+                dmin=d;
+            }
+        }
+        return pS;
+    }
+
+    function expandArea(g){
+        var tmpRoom=roomList[g].walls;
+
+        var last1=lineList[tmpRoom[0]].from;
+        var last2=lineList[tmpRoom[0]].to;
+        var this1=lineList[tmpRoom[1]].from;
+        var this2=lineList[tmpRoom[1]].to;
+        var last;
+        if (this1==last1 || this2==last1){
+            last=last1;
+            var x0=pointList[lineList[tmpRoom[0]].from].x;
+            var y0=pointList[lineList[tmpRoom[0]].from].y;
+            tmpRoom[0]=-tmpRoom[0];
+        }
+        else
+            if (this1==last2 || this2==last2){
+                last=last2;
+                var x0=pointList[lineList[tmpRoom[0]].to].x;
+                var y0=pointList[lineList[tmpRoom[0]].to].y;
+            }
+            else
+                alert("erro 1")
+        var xmin=x0;
+        var xmax=x0;
+        var ymin=y0;
+        var ymax=y0;
+        var points=[];
+        points.push({x:x0,y:y0});
+        for(var f=1;f<tmpRoom.length;f++){
+            var this1=lineList[tmpRoom[f]].from;
+            var this2=lineList[tmpRoom[f]].to;
+            if (this1==last){
+                last=this2;
+                var x=pointList[this2].x;
+                var y=pointList[this2].y;
+                points.push({x:x,y:y});
+            }
+            else
+                if (this2==last){
+                    last=this1;
+                    tmpRoom[f]=-tmpRoom[f];
+                    var x=pointList[this1].x;
+                    var y=pointList[this1].y;
+                    points.push({x:x,y:y});
+                }
+                else
+                    alert("erro 2")
+            xmin=Math.min(x,xmin);
+            ymin=Math.min(y,ymin);
+            xmax=Math.max(x,xmax);
+            ymax=Math.max(y,ymax);
+        }
+        points.push({x:x0,y:y0});
+
+        roomList[g].xc=(xmax+xmin)/2;
+        roomList[g].yc=(ymax+ymin)/2;
+        roomList[g].points=points;
+    }
+
+    function image_mup(ev){
+        var p=getCoordsFromEvent(ev);
+        switch (mode) {
+            case "AddScene":
+                var sceneName = prompt("Please enter scene name");
+                var icon=document.getElementById("txtIconScene").innerText.replace("Icon: ","");
+                
+                sceneList.push({ x:p.x,y:p.y, name:sceneName, icon:icon});
+                mode="";
+                message("");
+                Refresh("canvas");
+                break;
+            case "AddSLight":
+                var sensorName = prompt("Please enter sensor name");
+                sensorList.push({ type:"Light", x:p.x,y:p.y, name:sensorName})
+                mode="";
+                message("");
+                Refresh("canvas");                
+                break;
+            case "AddSMotion":
+                var sensorName = prompt("Please enter sensor name");
+                sensorList.push({ type:"Motion", x:p.x,y:p.y, name:sensorName})
+                mode="";
+                message("");
+                Refresh("canvas");                
+                break;
+            case "AddSLux":
+                var sensorName = prompt("Please enter sensor name");
+                sensorList.push({ type:"Lux", x:p.x,y:p.y, name:sensorName})
+                Mode="";
+                message("");
+                Refresh("canvas");                
+                break;
+            case "AddSFlood":
+                var sensorName = prompt("Please enter sensor name");
+                sensorList.push({ type:"Flood", x:p.x,y:p.y, name:sensorName})
+                mode="";
+                message("");
+                Refresh("canvas");                
+                break;
+            case "AddSDoor":
+                //Find Door
+                var sensorName = prompt("Please enter sensor name");
+                sensorList.push({ type:"Door", x:p.x,y:p.y, name:sensorName})
+                mode="";
+                message("");
+                Refresh("canvas");                
+                break;
+            case "AddPoint":
+                Draw.Point(context,p.x,p.y,gridSize);
+                pointList.push({x:p.x,y:p.y});
+                message("");
+                Refresh("canvas");                
+                break;
+            case "DelPoint":
+                pSel=getClosestPoint(p);
+                pointList.splice(pSel,1);
+                for(var f=0;f<lineList.length;f++){
+                    if (lineList[f].from==pSel || lineList[f].to==pSel)
+                        lineList.splice(f);
+                    else
+                    {
+                        if(lineList[f].from>pSel)
+                            lineList[f].from=lineList[f].from-1;
+                        if(lineList[f].to>pSel)
+                            lineList[f].to=lineList[f].to-1;
+                    }
+                        
+                }
+                Refresh("canvas");
+                message("");
+                mode="";
+                break;
+            case "AddWall1":
+                pSel=getClosestPoint(p);
+                if (pSel){
+                    Draw.Point(context,pointList[pSel].x,pointList[pSel].y,gridSize,"#ff0000");
+                }
+                mode="AddWall2";
+                message("Pick next point");
+                break;
+            case "AddWall2":
+                var p2=getClosestPoint(p);
+                var lvl=document.getElementById("selLvl").innerText.replace("Level: ","");
+                lineList.push({from:pSel,to:p2,lvl:lvl});
+                pSel=p2;
+                mode="";
+                message("");
+                break;
+            case "DelWall":
+                var p2=getClosestLine(p);
+                lineList.splice(p2,1);
+                //search for room
+                var i=roomList.findIndex(r=>r.walls.findIndex(w=>Math.abs(w)==p2)>=0);
+                console.log(p2, i)
+                if (i>=0)
+                    roomList.splice(i,1);
+                Refresh("canvas");
+                message("");
+                mode="";
+                break;
+            case "LvlWall":
+                var p2=getClosestLine(p);
+                var lvl=document.getElementById("selLvl").innerText.replace("Level: ","");
+                lineList[p2].lvl=lvl;
+                Refresh("canvas");
+                mode="";
+                message("");
+                break;
+            case "RefPoint":
+                var p2=getClosestPoint(p);
+                pointList[p2].ref=true;
+                Refresh("canvas");
+                mode="";
+                message("");
+                break;
+            case "AddRoom":
+                var p2=getClosestLine(p);
+                tmpRoom.push(p2);
+                var x0=pointList[lineList[p2].from].x;
+                var y0=pointList[lineList[p2].from].y;
+                var x1=pointList[lineList[p2].to].x;
+                var y1=pointList[lineList[p2].to].y;
+                Draw.Point(context,(x0+x1)/2, (y0+y1)/2,gridSize,"#00FF00","#FF0000");
+                break;
+            case "EndRoom":
+                var roomTitle = prompt("Please enter room name");
+                //var roomTitle=document.getElementById("txtRoom").value
+                roomList.push({room:roomTitle,walls:tmpRoom});
+                console.log(tmpRoom)
+                expandArea(roomList.length-1);
+                tmpRoom=[];
+                Refresh("canvas");
+                mode="";
+                message("");
+                break;
+            case "AddDoor":
+                pSel=getClosestLine(p);
+                console.log("pSel", pSel)
+                mode="AddDoor2";
+                message("click to mark the door");
+                break;
+            case "AddDoor2":
+                //line H or V
+                var doorSize=document.getElementById("txtDoorSize").value;
+                var doorName = prompt("Please enter door name");
+                var doorType=document.getElementById("selDoorType").innerText.replace("Type: ","");
+                var blinder=document.getElementById("selBlinder").innerText.replace("Blinder: ","");
+                if (blinder=="Yes")
+                    blinder=true;
+                else
+                    blinder=false;
+                doorList.push({ 
+                    name:doorName,
+                    type:doorType,
+                    size:doorSize,wall:pSel, 
+                    lvl:lineList[pSel].lvl,
+                    points:tmpRoom,
+                blinder:blinder })
+                mode="";
+                message("");
+                Refresh("canvas");
+
+                break;
+            default:
+                break;
+        }
+    }
+    function image_mm(ev){
+        var p=getCoordsFromEvent(ev);
+
+        if (mode!="" && mode!="AddRoom")
+        {
+            Refresh("canvas");
+
+
+            Draw.Point(context,p.x,p.y,gridSize,"#0000FF");
+
+            if (mode=="AddWall2"){
+                var pSel2=getClosestPoint(p);
+                Draw.Point(context,pointList[pSel].x,pointList[pSel].y,gridSize,"#ff0000");
+                Draw.Line(context,pointList[pSel].x,pointList[pSel].y,pointList[pSel2].x,pointList[pSel2].y,"#0000FF")
+            }
+            if (mode=="AddDoor2"){
+                //var p2=getClosestLine(p);
+                //find closest point in the wall
+                var cp=GeometryMath.closest(p,pointList[lineList[pSel].from], pointList[lineList[pSel].to]);
+
+                // var x0=pointList[lineList[pSel].from].x;
+                // var y0=pointList[lineList[pSel].from].y;
+                // var x1=pointList[lineList[pSel].to].x;
+                // var y1=pointList[lineList[pSel].to].y;
+
+                // Draw.Line(x0,y0,x1,y1,"#FF00FF",12)
+
+                //find other door point
+                var doorSize=document.getElementById("txtDoorSize").value;
+                var door=getDoorCoords(cp, lineList[pSel], doorSize);
+
+                Draw.Line(context,door.x,door.y,door.x1,door.y1, "#ff0000");
+                tmpRoom={x:door.x,y:door.y, x1:door.x1,y1: door.y1};
+            }
+        }
+    }
+
+function getDoorCoords(cc, wall, doorSize){
+    var x0=pointList[wall.from].x;
+    var y0=pointList[wall.from].y;
+    var x1=pointList[wall.to].x;
+    var y1=pointList[wall.to].y;
+
+    //find other door point
+    if (x0==x1){
+        //vertical
+        cc.y-=doorSize/2;
+        var ymi=Math.min(y0,y1);
+        if (cc.y<ymi){
+            cc.y=ymi;
+        }
+        var yma=Math.max(y0,y1);
+        if (cc.y>=yma-doorSize/2){
+            cc.y=yma-doorSize/2;
+        }
+        var cc1={x:cc.x, y:cc.y+doorSize/2}
+        console.log("V")
+    }
+    else
+    {
+        console.log("H")
+        //horizontal
+        cc.x-=doorSize/2;
+        var xmi=Math.min(x0,x1);
+        if (cc.x<xmi){
+            cc.x=xmi;
+        }
+        var xma=Math.max(x0,x1);
+        if (cc.x>=xma-doorSize/2){
+            cc.x=xma-doorSize/2;
+        }
+        var cc1={x:cc.x+doorSize/2,y:cc.y}
+    }
+    return {x:cc.x,y:cc.y,x1:cc1.x,y1:cc1.y}
+}
+
+
+
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d");
+    var image = new Image();
+
+    var imageIcons=new Image();
+    imageIcons.src="images.png";
+
+    loadHome(home);
+
+    image.onload=function()
+    {
+        var canvasContainer=document.getElementById("canvasContainer");
+        var wi=window.innerWidth;
+        var hi=window.innerHeight-canvas.offsetTop-25;
+        canvas.width  = image.width;
+        canvasContainer.style.width=wi + "px";
+        canvasContainer.style.height=hi + "px";
+        canvas.height = image.height; 
+
+        context.drawImage(image, 0, 0);
+        // loadHome(home);
+        Refresh("canvas");
+    }
+
+    //image.src="planta.png";
+
+    document.getElementById("canvas").addEventListener("mouseup",image_mup)
+    document.getElementById("canvas").addEventListener("mousemove",image_mm)
+</script>
+
+</body>
+</html>
