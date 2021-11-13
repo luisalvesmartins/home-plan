@@ -88,7 +88,7 @@ var Draw={
                 vp=1;
                 break;
             case "Blinder":
-                vp=1;
+                vp=5;
                 break;
             default:
                 break;
@@ -559,9 +559,17 @@ class LamPlan extends LitElement  {
         }
         else
             if (p!=-1){
-                console.log(sensorList[p])
-                console.log("TOGGLE:" + sensorList[p].entityId);
-                this._toggle(sensorList[p].entityId);
+                if (sensorList[p].type=="Blinder"){
+                    //check if cursor above or below midpoint
+                    if (P.y<sensorList[p].y+22)
+                        console.log("below ", P.y, sensorList[p].y);
+                    else
+                        console.log("above ", P.y, sensorList[p].y);
+                }
+                else{
+                    console.log("TOGGLE:" + sensorList[p].entityId);
+                    this._toggle(sensorList[p].entityId);
+                }
             }
     };
 
