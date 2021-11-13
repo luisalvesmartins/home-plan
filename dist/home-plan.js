@@ -88,7 +88,7 @@ var Draw={
                 vp=1;
                 break;
             case "Blinder":
-                vp=5;
+                vp=6;
                 break;
             default:
                 break;
@@ -509,7 +509,26 @@ class LamPlan extends LitElement  {
                 title: "myPlan", 
                 Plan:[] }
     }
-  
+
+    _blinder(entityId,direction){
+        var service="stop_cover";
+        switch (direction) {
+            case "up":
+                service="open_cover"
+                break;
+            case "down":
+                service="close_cover"
+                break;
+            case "stop":
+                service="stop_cover"
+            default:
+                break;
+        }
+        this._hass.callService('cover', service, {
+            entity_id: entityId
+          });        
+    }
+
     _toggle(entityId) {
         if (this._hass.states[entityId].state=="off"){
             this._hass.callService('light', 'turn_on', {
@@ -561,10 +580,13 @@ class LamPlan extends LitElement  {
             if (p!=-1){
                 if (sensorList[p].type=="Blinder"){
                     //check if cursor above or below midpoint
-                    if (P.y<sensorList[p].y+22)
-                        console.log("below ", P.y, sensorList[p].y);
+                    if (P.y<sensorList[p].y)
+                        this._blinder(sensorList[p].entityId,"up")
                     else
-                        console.log("above ", P.y, sensorList[p].y);
+                        if (Math.abs(P.y-sensorList[p].y)<10)
+                            this._blinder(sensorList[p].entityId,"stop")
+                        else
+                            this._blinder(sensorList[p].entityId,"down")
                 }
                 else{
                     console.log("TOGGLE:" + sensorList[p].entityId);
