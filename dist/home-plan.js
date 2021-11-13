@@ -239,7 +239,7 @@ class LamPlan extends LitElement  {
                 var sx=Math.max(sx,sy)*1.1;
                 //console.log(outside.offsetWidth, outside.offsetHeight, sx)
                 Limits.scale=1/sx;
-                console.log("Zoom autoscale:", Limits.scale)
+                //console.log("Zoom autoscale:", Limits.scale)
             }
         canvas.width  = Limits.xmax;
         canvas.height = Limits.ymax; 
@@ -524,7 +524,7 @@ class LamPlan extends LitElement  {
             default:
                 break;
         }
-        console.log(entityId,direction)
+        console.log("blinder", entityId,direction)
         this._hass.callService('cover', service, {
             entity_id: entityId
           });        
@@ -580,6 +580,7 @@ class LamPlan extends LitElement  {
         else
             if (p!=-1){
                 if (sensorList[p].type=="Blinder"){
+                    console.log(sensorList[p])
                     //check if cursor above or below midpoint
                     if (P.y<sensorList[p].y)
                         this._blinder(sensorList[p].entityId,"up")
