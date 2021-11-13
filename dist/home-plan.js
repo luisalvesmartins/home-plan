@@ -126,6 +126,13 @@ var Limits={
             this.ymin=Math.min(this.ymin,pointList[f].y);
             this.ymax=Math.max(this.ymax,pointList[f].y);
         }
+        const margin=0.05;
+        var dx=this.xmax-this.xmin;
+        this.xmin=this.xmin-dx*margin;
+        this.xmax=this.xmax+dx*margin;
+        var dy=this.ymax-this.ymin;
+        this.ymin=this.ymin-dy*margin;
+        this.ymax=this.ymax+dy*margin;
     },
     Scale:function(p){
         var x=(p.x-Limits.xmin)*Limits.scale+20;
@@ -582,12 +589,11 @@ class LamPlan extends LitElement  {
         else
             if (p!=-1){
                 if (sensorList[p].type=="Blinder"){
-                    console.log(sensorList[p])
                     //check if cursor above or below midpoint
                     if (P.y<sensorList[p].y)
                         this._blinder(sensorList[p].entityId,"up")
                     else
-                        if (Math.abs(P.y-sensorList[p].y)<10)
+                        if (Math.abs(P.y-sensorList[p].y)<15)
                             this._blinder(sensorList[p].entityId,"stop")
                         else
                             this._blinder(sensorList[p].entityId,"down")
