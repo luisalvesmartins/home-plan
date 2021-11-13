@@ -87,6 +87,9 @@ var Draw={
             case "Door":
                 vp=1;
                 break;
+            case "Blinder":
+                vp=1;
+                break;
             default:
                 break;
         }
@@ -374,7 +377,13 @@ class LamPlan extends LitElement  {
                         else
                             sensorList[f].state=false;
                         break;
-
+                    case "Blinder":
+                        if (state.state=="on")
+                            sensorList[f].state=true;
+                        else
+                            sensorList[f].state=false;
+                        break;
+    
 //OUTROS AQUI: Lux
                 }
                 //console.log(sensorList[f].entityId +"|" + sensorList[f].state + "   >" + JSON.stringify(state))
@@ -550,6 +559,7 @@ class LamPlan extends LitElement  {
         }
         else
             if (p!=-1){
+                console.log(sensorList[p])
                 console.log("TOGGLE:" + sensorList[p].entityId);
                 this._toggle(sensorList[p].entityId);
             }

@@ -121,6 +121,9 @@ var Draw={
             case "Door":
                 vp=1;
                 break;
+            case "Blinder":
+                vp=6;
+                break;
             default:
                 break;
         }

@@ -85,6 +85,7 @@
                         <li data="AddSLux">Lux</li>
                         <li data="AddSFlood">Flood</li>
                         <li data="AddSDoor">Door Contact</li>
+                        <li data="AddSBlinder">Blinder</li>
                     </ul>
                 </li>
                 <li>
@@ -237,8 +238,8 @@ function setMenu(op){
     }
     function getCoordsFromEvent(ev){
         if (ev){
-            var x=ev.clientX+document.scrollingElement.scrollLeft-canvas.offsetLeft;
-            var y=ev.clientY+document.scrollingElement.scrollTop-canvas.offsetTop;
+            var x=ev.clientX+document.scrollingElement.scrollLeft-canvas.offsetLeft+document.getElementById("canvasContainer").scrollLeft;
+            var y=ev.clientY+document.scrollingElement.scrollTop-canvas.offsetTop+document.getElementById("canvasContainer").scrollTop;
             x=Math.floor(x/gridSize+.5)*gridSize;
             y=Math.floor(y/gridSize+.5)*gridSize;
             return {x:x,y:y}
@@ -383,6 +384,14 @@ function setMenu(op){
                 //Find Door
                 var sensorName = prompt("Please enter sensor name");
                 sensorList.push({ type:"Door", x:p.x,y:p.y, name:sensorName})
+                mode="";
+                message("");
+                Refresh("canvas");                
+                break;
+            case "AddSBlinder":
+                //Find Blinder
+                var sensorName = prompt("Please enter sensor name");
+                sensorList.push({ type:"Blinder", x:p.x,y:p.y, name:sensorName})
                 mode="";
                 message("");
                 Refresh("canvas");                
@@ -610,6 +619,10 @@ function getDoorCoords(cc, wall, doorSize){
     }
 
     //image.src="planta.png";
+    window.onresize=function(){
+        image.onload();
+        Refresh("canvas");
+    }
 
     document.getElementById("canvas").addEventListener("mouseup",image_mup)
     document.getElementById("canvas").addEventListener("mousemove",image_mm)
