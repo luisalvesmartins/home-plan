@@ -120,6 +120,10 @@ var Limits={
     scale:1,
 
     calc:function(pointList){
+        this.xmin=999999;
+        this.ymin=999999;
+        this.xmax=0;
+        this.ymax=0;
         for(var f=0;f<pointList.length;f++){
             this.xmin=Math.min(this.xmin,pointList[f].x);
             this.xmax=Math.max(this.xmax,pointList[f].x);
