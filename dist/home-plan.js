@@ -525,9 +525,11 @@ class LamPlan extends LitElement  {
                 break;
         }
         console.log("blinder", entityId,direction)
-        this._hass.callService('cover', service, {
-            entity_id: entityId
-          });        
+        if (entityId){
+            this._hass.callService('cover', service, {
+                entity_id: entityId
+              });        
+        }
     }
 
     _toggle(entityId) {
