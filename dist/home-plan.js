@@ -524,6 +524,7 @@ class LamPlan extends LitElement  {
             default:
                 break;
         }
+        console.log(entityId,direction)
         this._hass.callService('cover', service, {
             entity_id: entityId
           });        
