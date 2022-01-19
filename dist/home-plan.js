@@ -248,9 +248,7 @@ class LamPlan extends LitElement  {
                 var sx=(Limits.xmax-Limits.xmin)/(outside.offsetWidth);
                 var sy=(Limits.ymax-Limits.ymin)/(document.documentElement.clientHeight-100);
                 var sx=Math.max(sx,sy)*1.1;
-                //console.log(outside.offsetWidth, outside.offsetHeight, sx)
                 Limits.scale=1/sx;
-                //console.log("Zoom autoscale:", Limits.scale)
             }
         canvas.width  = Limits.xmax;
         canvas.height = Limits.ymax; 
@@ -272,7 +270,6 @@ class LamPlan extends LitElement  {
             roomList[g].presence=false;
             if (roomList[g].entities){
                 for (var f=0;f<roomList[g].entities.length;f++){
-                    //console.log(this._hass.states[roomList[g].entities[f]].state)
                     if (this._hass.states[roomList[g].entities[f]].state=="on")
                         roomList[g].presence=true;
                 }
@@ -416,9 +413,7 @@ class LamPlan extends LitElement  {
     }
     
     updated(_changedProperties) {
-      console.log("updated()")
       this.Refresh();
-        // All handle internally
     }
     
     getCardSize() {
@@ -428,7 +423,6 @@ class LamPlan extends LitElement  {
   // The user supplied configuration. Throw an exception and Lovelace will
   // render an error card.
   setConfig(config) {
-    console.log("setConfig()")
     if (config.zoom)
     {
         zoom=config.zoom;
@@ -474,7 +468,7 @@ class LamPlan extends LitElement  {
             //scene+sceneButton
             var sceneButton = this.config.entities[f].sceneButton;
             var sc=sceneList.findIndex(s=>s.name==sceneButton);
-            console.log("scene:" + sceneButton + ">" + sc)
+            //console.log("scene:" + sceneButton + ">" + sc)
             if (sc>=0){
                 sceneList[sc].scene=scene;
             }
@@ -496,7 +490,7 @@ class LamPlan extends LitElement  {
                     var ri=sensorList.findIndex(r=>r.name==entitySensor);
                     if (ri>=0){
                         if (sensorList[ri].entityId){
-                            console.log("WARNING: entity assigned to sensor already assigned -" + entityID + " to " + entitySensor)
+                            console.log("WARNING: entity assigned to sensor already assigned -" + sensorList[ri].entityId + " to " + entitySensor)
                         }
                         else
                             sensorList[ri].entityId=entityId;
@@ -535,7 +529,7 @@ class LamPlan extends LitElement  {
             default:
                 break;
         }
-        console.log("blinder", entityId,direction)
+        //console.log("blinder", entityId,direction)
         if (entityId){
             this._hass.callService('cover', service, {
                 entity_id: entityId
@@ -544,25 +538,26 @@ class LamPlan extends LitElement  {
     }
 
     _toggle(entityId) {
-        if (this._hass.states[entityId].state=="off"){
-            this._hass.callService('light', 'turn_on', {
-              entity_id: entityId
-            });        
-            this._hass.states[entityId].state="on";
-        }
-        else
-        {
-            this._hass.callService('light', 'turn_off', {
-              entity_id: entityId
-            });        
-            this._hass.states[entityId].state="off";
-        }
+        this._hass.callService("homeassistant", "toggle", {
+             entity_id: entityId
+        });
+        // MANUAL MODE
+        // if (this._hass.states[entityId].state=="off"){
+        //     this._hass.callService('light', 'turn_on', {
+        //       entity_id: entityId
+        //     });        
+        //     this._hass.states[entityId].state="on";
+        // }
+        // else
+        // {
+        //     this._hass.callService('light', 'turn_off', {
+        //       entity_id: entityId
+        //     });        
+        //     this._hass.states[entityId].state="off";
+        // }
         this.Refresh();
 
         return;
-        // this._hass.callService("homeassistant", "toggle", {
-        //     entity_id: entityId
-        // });
       }
     _mup(e) {
         var bcr = this.shadowRoot.getElementById("hp_canvas").getBoundingClientRect();
