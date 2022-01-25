@@ -95,15 +95,17 @@ var Draw={
         }
         context.drawImage(imageIcons, iState*46,vp*46,46,46, sensor.x-w2, sensor.y-w2,w,w);
     },
-    Scene:function(context,scene){
+    Scene:function(context,scene,show){
         var scaled=Limits.Scale(scene)
         const size=10;
         const color="#000000";
-        context.font = 'normal bold ' + Limits.ScaleText(size) + "px sans-serif";
-        context.textAlign = 'center';
-        context.fillStyle=color;
-        context.textBaseline="middle";
-        context.fillText(scene.name, scaled.x, scaled.y+Limits.scale*31);
+        if (show.textScene){
+            context.font = 'normal bold ' + Limits.ScaleText(size) + "px sans-serif";
+            context.textAlign = 'center';
+            context.fillStyle=color;
+            context.textBaseline="middle";
+            context.fillText(scene.name, scaled.x, scaled.y+Limits.scale*31);
+        }
         var vp=5;
         var iState=scene.icon;
         var w=Limits.scale*46;
@@ -257,7 +259,8 @@ class LamPlan extends LitElement  {
 
         var show={
             textArea:true,
-            textDoor:true
+            textDoor:false,
+            textScene:false
         }
 
         //AREAS
@@ -270,8 +273,10 @@ class LamPlan extends LitElement  {
             roomList[g].presence=false;
             if (roomList[g].entities){
                 for (var f=0;f<roomList[g].entities.length;f++){
-                    if (this._hass.states[roomList[g].entities[f]].state=="on")
-                        roomList[g].presence=true;
+                    var st=this._hass.states[roomList[g].entities[f]];
+                    if (st)
+                        if (st.state=="on")
+                            roomList[g].presence=true;
                 }
             }
 
@@ -357,6 +362,9 @@ class LamPlan extends LitElement  {
             if (sensorList[f].entityId)
             {
                 var state=this._hass.states[sensorList[f].entityId];
+                if (state)
+                {
+
                 switch (sensorList[f].type)
                 {
                     case "Light":
@@ -394,13 +402,14 @@ class LamPlan extends LitElement  {
     
 //OUTROS AQUI: Lux
                 }
-                //console.log(sensorList[f].entityId +"|" + sensorList[f].state + "   >" + JSON.stringify(state))
+            }
+            //console.log(sensorList[f].entityId +"|" + sensorList[f].state + "   >" + JSON.stringify(state))
             }
             Draw.Sensor(context,sensorList[f].name, sensorList[f].type, w, 10,"#000000",sensorList[f].state);
         }
         //Scene
         for (var f=0;f<sceneList.length;f++){
-            Draw.Scene(context,sceneList[f]);
+            Draw.Scene(context,sceneList[f],show);
         }
 
     }
